@@ -21,43 +21,74 @@ HTTPプロトコルに従いインターネットからリクエストと呼ば�
 
 以下のコマンドを実行すると下記の生のリクエストとレスポンスを含む文章が表示される
 
+
 ```
 $curl --http1.1 --get -v https://www.kmc.gr.jp/
-（中略）
+（中略、以下リクエスト）
  GET / HTTP/1.1
  Host: qiita.com
  User-Agent: curl/7.55.1
  Accept: */*
  
+ (中略、以下レスポンス)
+ HTTP/1.1 200 OK
+ Server: nginx/1.17.6
+ Date: Thu, 02 Jan 2020 15:05:02 GMT
+ Content-Type: text/html
+ Content-Length: 10051
+ Last-Modified: Thu, 02 Jan 2020 04:29:12 GMT
+ Connection: keep-alive
+ Vary: Accept-Encoding
+ ETag: "5e0d7198-2743"
+ Strict-Transport-Security: max-age=15768000
+ Accept-Ranges: bytes
+ 
+<!DOCTYPE html>
+<html lang='ja' data-path='index'>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <link rel="stylesheet" href="/assets/kmc-d37c216ea54258989bb2b5cfcba505b7.css">
+(以下HTML)
 ```
 
-これが生のHTTPリクエストである。
+これが生のHTTPリクエストとレスポンスである。
 
-`GET`は(メソッド|method)という情報であり情報に対する処理を意味する。
-`GET`は取得を意味し他にも情報を書き込む`POST`や情報を削除する`DELETE`などがある
+リクエストから解説する
 
-次の `/` は(相対パス|path|URI)という情報であり情報の場所を意味する
-`/` は最上位の場所を意味する。`/a/b/c`はaの中のbの中のcという場所を意味する
+- `GET`は(メソッド|method)という情報であり情報に対する処理を意味する。
+    - `GET`は取得を意味する
+    - 他にも情報を書き込む`POST`や情報を削除する`DELETE`などがある
+- `/` は(相対パス|path|URI)という情報であり情報の場所を意味する
+    - `/` は最上位の場所を意味する。
+    - 例えば`/a/b/c`はaの中のbの中のcという場所を意味する
+- `HTTP/1.1` はプロトコルとプロトコルバージョンの宣言である。
+    - 現在のブラウザはほぼ`HTTP/1.1`で通信している
+- `Host: www.kmc.gr.jp` は(ホスト|host)という情報でありIPアドレスかドメインで接続先コンピュータを指定する。
+    - `www.kmc.gr.jp`は接続先のコンピューターを指定するドメインである。
+    - ドメインに対応するIPアドレスは `$nslookup www.kmc.gr.jp` コマンドで表示できる
+- 他はリクエストのHTTPヘッダである。
+    - ` User-Agent: curl/7.55.1`はリクエストを発行したプログラムを表す。
+    - ` Accept: */*` は要求するレスポンスの形式を表す。
+    - 他にも様々な種類のヘッダが存在する。
 
-`HTTP/1.1` はプロトコルとプロトコルバージョンの宣言である。
-現在のブラウザはほぼ`HTTP/1.1`で通信している
+レスポンスを解説する
 
-`Host: www.kmc.gr.jp` は(ホスト|host)という情報でありIPアドレスかドメインで接続先コンピュータを指定する。
-`www.kmc.gr.jp`は接続先のコンピューターを指定するドメインである。
-ドメインに対応するIPアドレスは以下のコマンドで表示できる
+- `HTTP/1.1` はレスポンスと同様にプロトコルとそのバージョン
+- `200 OK` はステータスと呼ばれてレスポンスの概要をステータスコードと呼ばれる番号で表す
+    - 200から299までは成功を意味する
+        - 200 OK : リクエストは成功しレスポンスとともに要求に応じた情報が返される。
+    - 400から499まではクライアントエラーを意味する
+        - 400 Bad Request : リクエストが不正である。
+        - 404 Not Found : 未検出。リソースが見つからなかった。
+    - 500から599 まではサーバーエラーを意味する
+- 続きはレスポンスのヘッダであり様々な種類がある
+    - Date: Thu, 02 Jan 2020 15:11:54 GMT はサーバーで観測したアクセス時刻
+- ヘッダーの後一行空けてレスポンスの内容が格納されている
+    - 今回はトップページを要求しているのでHTMLを返している
 
-```
-$nslookup www.kmc.gr.jp
-（中略）
-Non-authoritative answer:
-Name:    www.kmc.gr.jp
-Addresses:  2400:8500:1301:738:133:130:102:242
-          133.130.102.242
-```
+インターネットでリクエストを受け付けレスポンスを送るのがウェブサーバーである。
 
-他はHTTPヘッダであり様々な種類のヘッダが存在する。
-` User-Agent: curl/7.55.1`はリクエストを発行したプログラムを表す。
-` Accept: */*` は要求するレスポンスの形式を表す。
 
 ## files
 - .gcloudignore
