@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -40,36 +41,39 @@ func HandleFile() {
 	})
 }
 
-func Environment(CredentialPath string, DatastoreKind string) {
+func Listen(Env map[string]string) {
 	var e error
-	if CredentialPath != "" {
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+	if v, ok := Env["CREDENTIAL"]; !ok {
+		log.Println("no credential")
+	} else {
+		Env["GOOGLE_APPLICATION_CREDENTIALS"] = v
 		var fc map[string]string
-		bytes, _ := ioutil.ReadFile(CredentialPath)
+		bytes, _ := ioutil.ReadFile(v)
 		e = json.Unmarshal(bytes, &fc)
 		if e == nil {
-			e = os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", CredentialPath)
-			e = os.Setenv("PROJECT_ID", fc["project_id"])
-			e = os.Setenv("CLIENT_EMAIL", fc["client_email"])
-			e = os.Setenv("PRIVATE_KEY", fc["private_key"])
+			for k, v := range fc {
+				Env[strings.ToUpper(k)] = v
+			}
 		}
 		if e != nil {
-			log.Println(e)
-		} else {
-			log.Printf("Setting credentials %s", fc["project_id"])
+			log.Fatalln(e)
 		}
 	}
-	e = os.Setenv("DATASTORE_KIND", DatastoreKind)
-}
-func Listen() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	if _, ok := Env["PORT"]; !ok {
+		Env["PORT"] = "8080"
+		log.Printf("no port, use %s", Env["PORT"])
 	}
-	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
-	log.Printf("http://localhost:%s", port)
-	e := http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
+	if _, ok := Env["KIND"]; !ok {
+		log.Printf("no kind")
+	}
+	for k, v := range Env {
+		os.Setenv(k, v)
+	}
+	log.Printf("http://localhost:%s", os.Getenv("PORT"))
+	e = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), nil)
 	if e != nil {
-		log.Println(e)
+		log.Fatalln(e)
 	}
 }
 

@@ -10,7 +10,8 @@ import (
 	"time"
 )
 
-type Key=datastore.Key
+type Key = datastore.Key
+
 func GetClient() (*datastore.Client, context.Context) {
 	ctx := context.Background()
 	cli, e := datastore.NewClient(ctx, os.Getenv("PROJECT_ID"))
@@ -21,7 +22,7 @@ func GetClient() (*datastore.Client, context.Context) {
 	return nil, nil
 }
 func KeyKind() string {
-	x := os.Getenv("DATASTORE_KIND")
+	x := os.Getenv("KIND")
 	if x != "" {
 		return x
 	}
@@ -111,21 +112,29 @@ func Put(ptr IOHook, k *Key) {
 func NewQuery() *datastore.Query {
 	return datastore.NewQuery(KeyKind())
 }
-func GetAll(u *datastore.Query, PtrToArray interface{}) {
-	cli, ctx := GetClient()
-	if cli != nil {
-		if _, e := cli.GetAll(ctx, u, PtrToArray); e != nil {
-			log.Println(e)
+func GetAll(u *datastore.Query, PtrToArray interface{}) (c chan error) {
+	c,f := make(chan error),func() {
+		var e error
+		cli, ctx := GetClient()
+		if cli != nil {
+			_, e = cli.GetAll(ctx, u, PtrToArray)
 		}
+		c <- e
 	}
+	go f()
+	return c
 }
-func GetEntity(k *Key, Ptr interface{}) {
-	cli, ctx := GetClient()
-	if k != nil && cli != nil {
-		if e := cli.Get(ctx, k, Ptr); e != nil {
-			log.Println(e)
+func GetEntity(k *Key, Ptr interface{}) (c chan error) {
+	c,f := make(chan error),func() {
+		var e error
+		cli, ctx := GetClient()
+		if k != nil && cli != nil {
+			e = cli.Get(ctx, k, Ptr)
 		}
+		c <- e
 	}
+	go f()
+	return c
 }
 
 func GetEntities(k []*Key, DstArray interface{}) {
@@ -137,13 +146,13 @@ func GetEntities(k []*Key, DstArray interface{}) {
 	}
 }
 
-func GetEntitiesHelper(SrcArray interface{}, DstArray interface{},conv func(i interface{})*Key) {
-	va:=reflect.Indirect(reflect.ValueOf(SrcArray))
-	k:=make([]*Key,va.Len())
-	for i:=0;i<va.Len();i++{
-		k[i]=conv(va.Index(i).Interface())
+func GetEntitiesHelper(SrcArray interface{}, DstArray interface{}, conv func(i interface{}) *Key) {
+	va := reflect.Indirect(reflect.ValueOf(SrcArray))
+	k := make([]*Key, va.Len())
+	for i := 0; i < va.Len(); i++ {
+		k[i] = conv(va.Index(i).Interface())
 	}
-	GetEntities(k,DstArray)
+	GetEntities(k, DstArray)
 }
 
 func Delete(k *Key) {

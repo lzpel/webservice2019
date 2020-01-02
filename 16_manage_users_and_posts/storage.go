@@ -83,6 +83,5 @@ func TestStorage(credential string,filename string) {
 			or.Close()
 			w.Write(data)
 		})
-	Environment(credential,"")
-	Listen()
+	Listen(map[string]string{"JSON":credential})
 }

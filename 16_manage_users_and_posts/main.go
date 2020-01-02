@@ -11,16 +11,13 @@ func recheck(reg, str string) bool {
 func Expression(r Request) Dict {
 	var m Model
 	var mt []Model
-	log.Println("e1")
-	GetEntity(KeyDec(CookieGet(r, "AUTH")), &m)
-	log.Println("e2")
-	GetAll(NewQuery().Filter("KeyHead=", "I").Order("-TimeNew"), &mt)
-	log.Println("e3")
+	c1:=GetEntity(KeyDec(CookieGet(r, "AUTH")), &m)
+	c2:=GetAll(NewQuery().Filter("KeyHead=", "I").Order("-TimeNew"), &mt)
+	//並列化
+	<-c1
+	<-c2
 	mu:=make([]Model,len(mt))
-	GetEntitiesHelper(mt, mu, func(i interface{}) *Key {
-		return i.(Model).KeyUser
-	})
-	log.Println("e4")
+	GetEntitiesHelper(mt, mu, func(i interface{}) *Key {return i.(Model).KeyUser})
 	return Dict{
 		"AUTH": m,
 		"ITEM": mt,
@@ -103,6 +100,5 @@ func main() {
 			log.Println("4")
 		}
 	})
-	Environment("crediantial.json", "base")
-	Listen()
+	Listen(map[string]string{"CREDENTIAL":"crediantial.json","KIND":"base"})
 }
