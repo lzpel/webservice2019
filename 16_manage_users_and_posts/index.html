@@ -1,0 +1,25 @@
+{{define "body"}}
+    {{if .AUTH.Key}}
+        <form action="/itemadd/" method="POST">
+            <div class="form-group">
+                <label>つぶやき</label>
+                <textarea name="text" class="form-control" placeholder="いまどうしてる？"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary float-right">ツイート</button>
+        </form>
+    {{else}}
+        <h1>
+            「いま」起きていることを見つけよう
+        </h1>
+        <br><br>
+        <h3>Tsubuyaitterを始めよう</h3>
+    {{end}}
+    <ul class="list-group">
+        {{range $i, $v := .ITEM}}
+            <li class="list-group-item">
+                <b>{{(index $.USER $i).Name}}</b>
+                <p>{{$v.Text}}</p>
+            </li>
+        {{end}}
+    </ul>
+{{end}}

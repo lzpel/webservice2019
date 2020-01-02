@@ -1,0 +1,58 @@
+# 12_go_client_for_cloud_datastore
+## files
+- .gcloudignore
+    - gitやIDE関連の不要なファイルをサーバーに送らない設定ファイル
+    - 無くても動くが遅い
+- app.yaml
+    - サービスの設定をGCPに対し定義する
+- crediantial.json
+    - APIの使用権限。秘密鍵を含む。
+    - 本来githubに公開してはいけません。
+        - 以前仮想通貨の発掘に悪用されました。
+    - ストレージとデータベースに権限を制約しています。
+- datastore.go
+    -　Google Cloud Datastore のクライアントのラッパー
+- index.html
+    - ウェブページのテンプレート
+- index.yaml
+    - クエリの形式を定義
+- main.go
+    - サービス本体
+    - 分かりやすくするためserver.goとdatastore.goで色々隠蔽している
+    - 三つのgoの中身を良く見てね
+- readme.md
+    - このマークダウンファイル
+- server.go
+    - サービス開発に良く使う関数や型のラッパー
+## download
+- go get -u github.com/lzpel/webservice2019
+    - ダウンロードコマンド
+    - 以下のディレクトリに配置される
+    - $HOME\go\src\github.com\lzpel\webservice2019\11_helloworld_on_gae_go
+## build
+- 依存ライブラリを入手
+    - go get cloud.google.com/go/datastore
+- Golandの場合
+    - ビルド設定
+    - Edit Configurations
+        - Add New Configuration/Go build
+        - Name = app
+        - Run kind = Directory
+        - Directory and Working Directory = ～/13_go_client_for_cloud_storage
+  - Run 'app' / Debug 'app'
+- shellの場合
+  - windows：go build -i -o a.exe . ; a.exe
+- tips
+  - 管理者権限を求めるダイアログが出ればOKする
+    - 外部と通信するのでウィルスと疑われやすい
+## deploy
+- gcloud app deploy app.yaml index.yaml を実行するだけ
+  - プロジェクトを環境変数GOROOT内に配置すること
+    - 配置例
+      - ~/go/src/github.com/lzpel/webservice2019/12_go_client_for_cloud_datastore
+    - さもなくばエラー発生
+      - failed to build app: Your app is not on your GOPATH, please move it there and try again.
+  - 環境によって発生するエラーとその対処法
+    - gcloud cannot find package "golang.org/x/sys/unix"
+      - go get golang.org/x/sys/unix を実行すればいい
+        - https://github.com/GoogleCloudPlatform/golang-samples/issues/590

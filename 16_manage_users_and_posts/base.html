@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="jp">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Tsubuyaiter</title>
+</head>
+<body>
+<div class="container">
+    <a href="/">
+        <img src="/file/logo.png">
+    </a>
+
+{{if .AUTH.Key}}
+    <p>{{.AUTH.Name}}</p>
+{{else}}
+    <p>Tsubuyaitterへようこそ</p>
+{{end}}
+    <div class="btn-group" role="group">
+    {{if .AUTH.Key}}
+        <a class="btn btn-dark" href="/signout/" role="button">ログアウト</a>
+        <a class="btn btn-dark" href="/delete/" role="button">退会</a>
+    {{else}}
+        <a class="btn btn-dark" href="/signup/" role="button">会員登録</a>
+        <a class="btn btn-dark" href="/signin/" role="button">ログイン</a>
+    {{end}}
+        <a class="btn btn-dark" href="https://github.com/lzpel/webservice2019/tree/master/16_manage_users_and_posts"
+           role="button">Github</a>
+    </div>
+{{template "body" .}}
+</div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+</html>

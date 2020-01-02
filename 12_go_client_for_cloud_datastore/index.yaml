@@ -1,0 +1,6 @@
+indexes:
+- kind: base
+  properties:
+    - name: Area
+    - name: TimeBorn
+      direction: desc

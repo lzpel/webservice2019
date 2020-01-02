@@ -1,0 +1,63 @@
+# webservice2019
+ウェブサービス勉強会2019の資料
+
+## 後期講座
+- [11_helloworld_on_gae_go](11_helloworld_on_gae_go/readme.md)
+  - 日程: 2019年10月08日 18:30-21:00
+- [12_go_client_for_cloud_datastore](12_go_client_for_cloud_datastore/readme.md)
+  - 日程: 2019年10月15日 18:30-21:00
+- [13_go_client_for_cloud_storage](13_go_client_for_cloud_storage/readme.md)
+  - 日程: 2019年10月29日 18:30-21:00
+- [14_use_slack_api](14_use_slack_api/readme.md)
+  - 日程: 2019年11月05日 18:30-21:00
+- [15_use_ffmpeg](15_use_ffmpeg/readme.md)
+  - 日程: 2019年11月19日 18:30-21:00
+- [16_manage_users_and_posts](16_manage_users_and_posts/readme.md)
+  - 日程: 2019年12月10日 18:30-21:00
+- [17_develop_kmctube](17_develop_kmctube/readme.md)
+  - 日程: 2019年12月17日 18:30-21:00
+
+## 環境設定
+- golang
+  - 説明
+    - プログラミング言語go
+  - 特徴
+    - 速い 場合によるがpythonより100倍高速
+  - インストール
+    - ver1.12以上をダウンロード https://golang.org/dl/
+    - インストール ![Imgur](https://imgur.com/vPyWOeG.jpg)
+- GCloudSDK
+  - 説明
+    -GCPにアクセスするコマンドベースのソフトウェア
+  - インストール
+    - ダウンロード https://cloud.google.com/sdk/downloads?hl=ja
+      - windowsでは対話型インストーラがおすすめ
+        - 環境変数設定を自動でやってくれる
+  - アップデート
+    - 前期講座でインストールした人は最新版にアップデートしてください
+    - 理由
+      - デプロイでエラー発生：Your app is not on your GOPATH, this build may fail.
+        - https://amasuda.xyz/post/2019-01-30-gae-could-not-build-in-old-gcloud/
+    - 環境変数CLOUDSDK_PYTHONが～Python2.7\python.exeを指していることを確認
+      - さもなくば設定し再起動
+    - 管理者権限でシェルを開く
+      - gcloud components update を実行
+- 環境変数
+  - PATHについて
+    - 説明
+      - シェルコマンドの検索先のディレクトリのリスト
+    - このように設定してください ![Imgur](https://imgur.com/aC97Und.jpg)
+  - GOPATHについて
+    - 説明
+      - goのソースコードを**全て**含むディレクトリ
+      - go get コマンドでソース・ライブラリを取り込む先
+      - **自分が書いたコードもここにいれる**
+        - 私も下記で開発している
+        - ~\go\src\github.com\lzpel\webservice2019
+    - デフォルト
+      - 設定しなければ$HOME/goだと解釈される
+    - このように設定してください ![Imgur](https://imgur.com/9gWDYcZ.jpg)
+- Goland
+  - go言語のIDEです。インストールしてください。
+    - https://www.jetbrains.com/go/
+  - 京大の学生メールKUMOIで登録すれば無料

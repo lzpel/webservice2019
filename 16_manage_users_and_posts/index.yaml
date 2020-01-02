@@ -1,0 +1,11 @@
+indexes:
+- kind: base
+  properties:
+  - name: KeyHead
+  - name: TimeNew
+    direction: desc
+- kind: base
+  properties:
+  - name: KeyHead
+  - name: Code
+  - name: Word

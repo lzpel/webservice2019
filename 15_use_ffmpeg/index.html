@@ -1,0 +1,27 @@
+<html lang="jp">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body{
+            background-image: url('/public/KMClogo_trans.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body>
+<form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="fileinput">
+    <button type="submit">Upload</button>
+</form>
+<ul>
+    {{range .music}}
+        <li class="list-group-item">{{.Name}}:<br>
+            <audio src="{{.Key.ID | signedurl}}" controls>
+            </audio>
+        </li>
+    {{end}}
+</ul>
+</body>
+</html>
