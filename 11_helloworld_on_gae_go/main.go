@@ -1,9 +1,9 @@
 package main
 
 func main() {
-	handle("/", mainHandler)
-	serve("")
+	Handle("/", mainHandler)
+	Listen(map[string]string{})
 }
-func mainHandler(w response, r request) {
-	writetemplate(w, "index.html", nil)
+func mainHandler(w Response, r Request) {
+	Writef(w, nil, "index.html")
 }

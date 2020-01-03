@@ -60,8 +60,8 @@ func Listen(Env map[string]string) {
 			log.Fatalln(e)
 		}
 	}
-	if _, ok := Env["PORT"]; !ok {
-		Env["PORT"] = "8080"
+	if Env["PORT"]=os.Getenv("PORT"); Env["PORT"]=="" {
+		Env["PORT"]="8080"
 		log.Printf("no port, use %s", Env["PORT"])
 	}
 	if _, ok := Env["KIND"]; !ok {
@@ -70,8 +70,8 @@ func Listen(Env map[string]string) {
 	for k, v := range Env {
 		os.Setenv(k, v)
 	}
-	log.Printf("http://localhost:%s", os.Getenv("PORT"))
-	e = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), nil)
+	log.Printf("http://localhost:%s", Env["PORT"])
+	e = http.ListenAndServe(fmt.Sprintf(":%s", Env["PORT"]), nil)
 	if e != nil {
 		log.Fatalln(e)
 	}

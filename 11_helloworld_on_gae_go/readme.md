@@ -1,110 +1,85 @@
 # 11_helloworld_on_gae_go
-## 11.1 目的
+## 目的
 
 - Hello Worldを表示する
 - 基本的なウェブアプリケーションの仕組みを理解する
 
-## 11.2 基本的なウェブアプリケーションの仕組み
+## main.go, server.go
 
-ウェブアプリケーション - Wikipedia から引用
+Goの仕様として同一ディレクトリ直下のソースコードは同一パッケージに所属する必要がある。
+実際このディレクトリのソースコードは `main.go` `server.go` の二つであり共に`package main`で始まる。
 
->代表的なウェブアプリケーションでは、WebブラウザがHTTPを利用してHTMLを取得・表示、それをDOMを介してJavaScriptが操作し、必要に応じてWebサーバと通信をおこなってデータを更新する。このようにウェブ（World Wide Web）を基盤として作られる応用ソフトウェアをウェブアプリケーション（Webアプリ）と総称する。上記の例はあくまでウェブアプリケーションを実現する技術スタックの一例であり、他の様々な技術を用いてWebアプリを作成できる。またウェブアプリケーションの明確な定義は存在しない（動的なウェブページとの差異は不明瞭である）。
->ウェブアプリケーションの一例としては、ウィキペディアなどで使われているウィキやブログ、電子掲示板、銀行のインターネットバンキング、証券会社のオンライントレード、電子商店街などネット販売のショッピングカートなどを挙げることができる。
->ウェブアプリケーションに対して、ローカルのデスクトップ環境上で動作するアプリケーションは、デスクトップアプリケーションやスタンドアロンアプリケーション、スマートフォンで動作するアプリケーションはネイティブアプリと呼ばれる。
->Webアプリはクライアント-サーバーモデルを基本としており、WWWを基盤とする分散コンピューティングの一形態ともみれる。2010年代後半には多数のマイクロサービスをAPIを介して連携させ構成されるWebアプリも増えており、分散コンピューティングとしての側面がより強くなっている。
+Goの仕様として最初に実行される関数は`package main`の`func main`つまり`main.main()`である。
 
-### 11.2.1 最低限の仕組み
+`main.go`は以下のように定義されている。
+`index.html`をレスポンスに書き込んでいるだけである。
 
-HTTPプロトコルに従いインターネットからリクエストと呼ばれる情報の取得の要求を受け付けレスポンスと呼ばれる返答を返すプログラム
+```go
+package main
 
-### 11.2.2 リクエストとレスポンス
-
-以下のコマンドを実行すると下記の生のリクエストとレスポンスを含む文章が表示される
-
-
-```
-$curl --http1.1 --get -v https://www.kmc.gr.jp/
-（中略、以下リクエスト）
- GET / HTTP/1.1
- Host: qiita.com
- User-Agent: curl/7.55.1
- Accept: */*
- 
- (中略、以下レスポンス)
- HTTP/1.1 200 OK
- Server: nginx/1.17.6
- Date: Thu, 02 Jan 2020 15:05:02 GMT
- Content-Type: text/html
- Content-Length: 10051
- Last-Modified: Thu, 02 Jan 2020 04:29:12 GMT
- Connection: keep-alive
- Vary: Accept-Encoding
- ETag: "5e0d7198-2743"
- Strict-Transport-Security: max-age=15768000
- Accept-Ranges: bytes
- 
-<!DOCTYPE html>
-<html lang='ja' data-path='index'>
-  <head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link rel="stylesheet" href="/assets/kmc-d37c216ea54258989bb2b5cfcba505b7.css">
-(以下HTML)
+func main() {
+	Handle("/", mainHandler)
+	Listen(map[string]string{})
+}
+func mainHandler(w Response, r Request) {
+	Writef(w, nil, "index.html")
+}
 ```
 
-これが生のHTTPリクエストとレスポンスである。
+これは以下のソースコードと等価である。
+server.goの`Handle()`はパスと関数の対応を行う`http.HandleFunc()`、
+`Listen()`は接続待機を行う`http.ListenAndServe()`と環境変数周辺を、
+ラップし隠蔽している。
 
-リクエストから解説する
+```go
+package main
 
-- `GET`は(メソッド|method)という情報であり情報に対する処理を意味する。
-    - `GET`は取得を意味する
-    - 他にも情報を書き込む`POST`や情報を削除する`DELETE`などがある
-- `/` は(相対パス|path|URI)という情報であり情報の場所を意味する
-    - `/` は最上位の場所を意味する。
-    - 例えば`/a/b/c`はaの中のbの中のcという場所を意味する
-- `HTTP/1.1` はプロトコルとプロトコルバージョンの宣言である。
-    - 現在のブラウザはほぼ`HTTP/1.1`で通信している
-- `Host: www.kmc.gr.jp` は(ホスト|host)という情報でありIPアドレスかドメインで接続先コンピュータを指定する。
-    - `www.kmc.gr.jp`は接続先のコンピューターを指定するドメインである。
-    - ドメインに対応するIPアドレスは `$nslookup www.kmc.gr.jp` コマンドで表示できる
-- 他はリクエストのHTTPヘッダである。
-    - ` User-Agent: curl/7.55.1`はリクエストを発行したプログラムを表す。
-    - ` Accept: */*` は要求するレスポンスの形式を表す。
-    - 他にも様々な種類のヘッダが存在する。
+import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+)
 
-レスポンスを解説する
+func main() {
+	if os.Getenv("PORT")==""{
+		os.Setenv("PORT","8080")
+	}
+	http.HandleFunc("/", mainHandler)
+	http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), nil)
+}
+func mainHandler(w http.ResponseWriter, r *http.Request) {
+	b,_:=ioutil.ReadFile("index.html")
+	w.Write(b)
+}
+```
 
-- `HTTP/1.1` はレスポンスと同様にプロトコルとそのバージョン
-- `200 OK` はステータスと呼ばれてレスポンスの概要をステータスコードと呼ばれる番号で表す
-    - 200から299までは成功を意味する
-        - 200 OK : リクエストは成功しレスポンスとともに要求に応じた情報が返される。
-    - 400から499まではクライアントエラーを意味する
-        - 400 Bad Request : リクエストが不正である。
-        - 404 Not Found : 未検出。リソースが見つからなかった。
-    - 500から599 まではサーバーエラーを意味する
-- 続きはレスポンスのヘッダであり様々な種類がある
-    - Date: Thu, 02 Jan 2020 15:11:54 GMT はサーバーで観測したアクセス時刻
-- ヘッダーの後一行空けてレスポンスの内容が格納されている
-    - 今回はトップページを要求しているのでHTMLを返している
+server.goは他にも今後登場する様々な主要機能を実装した。
 
-インターネットでリクエストを受け付けレスポンスを送るのがウェブサーバーである。
+## app.yaml
+
+app.yamlはAppEngine対する設定ファイルである。
+AppEngineにデプロイする際に参照される。
+ローカルホストで開発している際は参照されない。
+
+以下が`app.yaml`の中身である。
+goのバージョン1.12で動作させることと
+`/`以下のパスのリクエスト（つまり全てのリクエスト）は
+開発したモジュールでハンドルすることを定めている。
 
 
-## files
-- .gcloudignore
-  - gitやIDE関連の不要なファイルをサーバーに送らない設定ファイル
-  - 無くても動くが遅い
-- app.yaml
-  - AppEngineの設定ファイル
-- index.html
-  - htmlファイル
-- main.go
-  - メインソースコード
-- readme.md
-  - このファイル
-- server.go
-  - main.goを短縮するためのライブラリ
-  - サーバー起動処理、型の別名付与、ユーティリティ関数をまとめた
+```yaml
+runtime: go112
+
+handlers:
+- url: /
+  script: auto
+```
+
+今回は基本だけであるが、
+特定の条件を満たしたパスを別のモジュールに割り当てたり、
+直接静的ファイルを配信したりと様々な設定ができる
+
 ## download
 - go get -u github.com/lzpel/webservice2019
   - ダウンロードコマンド

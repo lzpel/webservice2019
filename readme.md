@@ -1,6 +1,10 @@
 # webservice2019
 ウェブサービス勉強会20191の資料
 
+- [環境設定](環境設定.md)
+- [略説ウェブサービス](略説ウェブサービス.md)
+- [略説Go言語](略説Go言語.md)
+
 ## 日程
 - [11_helloworld_on_gae_go](11_helloworld_on_gae_go/readme.md)
   - 日程: 2019年10月08日 18:30-21:00
