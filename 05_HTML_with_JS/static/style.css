@@ -1,0 +1,8 @@
+/* redclassは赤色にする*/
+.redclass {
+    color: red;
+}
+/* imgタグ（画像）は-45度傾ける　*/
+img {
+    transform: rotate(-45deg);
+}

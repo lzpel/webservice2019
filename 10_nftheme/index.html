@@ -1,0 +1,56 @@
+{%extends "basepage.html"%}
+{%block main%}
+<h2>NFテーマ投票</h2>
+<form class="form-inline" action="/">
+    <div class="form-group mb-2" >
+        <input name="keyword" type="name" class="form-control" placeholder="名前で絞り込む" value="{{keyword}}">
+    </div>
+    <button type="submit" class="btn btn-primary mx-sm-3  mb-2">検索</button>
+</form>
+<p>得票数が-10を下回ったら削除されます。</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">テーマ</th>
+        <th scope="col">得票数</th>
+        <th scope="col">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <form action="/command">
+            <input name="id" value="{{m.key.id}}" hidden>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>
+                <input name="name" value="{{m.name}}" type="text" class="form-control">
+            </td>
+            <td>
+                <input name="vote" value="{{m.vote}}" type="number" class="form-control">
+            </td>
+            <td>
+                <button name="action" value="edit" type="submit" class="btn btn-primary btn-sm">登録</button>
+            </td>
+        </form>
+    </tr>
+    {%for m in candidate%}
+    <tr>
+        <form action="/command">
+            <input name="id" value="{{m.key.id}}" hidden>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>
+                <input name="name" value="{{m.name}}" type="text" class="form-control">
+            </td>
+            <td>
+                <input name="vote" value="{{m.vote}}" type="number" class="form-control">
+            </td>
+            <td>
+                <button name="action" value="upvote" type="submit" class="btn btn-success btn-sm">いいね</button>
+                <button name="action" value="downvote" type="submit" class="btn btn-danger btn-sm">しょうもな</button>
+            </td>
+        </form>
+    </tr>
+    {%endfor%}
+    </tbody>
+</table>
+{%endblock%}

@@ -1,0 +1,27 @@
+{%extends "basepage.html"%}
+{%block main%}
+<div class="jumbotron">
+    <h1 class="display-4">Webservice勉強会2019</h1>
+    <p class="lead">京大マイコンクラブとは京都大学最大のデジタル創作互助会である。</p>
+    <hr class="my-4">
+    <p>プログラミング、デスクトップミュージック、イラストに加えてウェブサービスの開発を始めた集団もいると聞く</p>
+    <a class="btn btn-primary btn-lg" href="/signup" role="button">会員登録</a>
+</div>
+<h2>現在の登録者</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">名前</th>
+    </tr>
+  </thead>
+  <tbody>
+{%for u in user%}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{u.name}}</td>
+    </tr>
+{%endfor%}
+  </tbody>
+</table>
+{%endblock%}
